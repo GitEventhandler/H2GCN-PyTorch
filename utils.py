@@ -57,8 +57,11 @@ def eidx_to_sp(n: int, edge_index: torch.Tensor, device=None) -> torch.sparse.Te
 
 
 def select_mask(i: int, train: torch.Tensor, val: torch.Tensor, test: torch.Tensor) -> torch.Tensor:
-    indices = torch.tensor([i]).to(train.device)
-    train_idx = torch.index_select(train, 1, indices).reshape(-1)
-    val_idx = torch.index_select(val, 1, indices).reshape(-1)
-    test_idx = torch.index_select(test, 1, indices).reshape(-1)
-    return train_idx, val_idx, test_idx
+    if train.dim() == 1:
+        return train, val, test
+    else:
+        indices = torch.tensor([i]).to(train.device)
+        train_idx = torch.index_select(train, 1, indices).reshape(-1)
+        val_idx = torch.index_select(val, 1, indices).reshape(-1)
+        test_idx = torch.index_select(test, 1, indices).reshape(-1)
+        return train_idx, val_idx, test_idx

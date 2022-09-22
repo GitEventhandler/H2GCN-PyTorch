@@ -12,7 +12,7 @@ This project should be able to run without any modification after following pack
 pytorch
 networkx
 torch-sparse
-torch_geometric
+torch-geometric
 ```
 
 ## Tutorial

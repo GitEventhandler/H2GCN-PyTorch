@@ -6,10 +6,19 @@ from torch import FloatTensor
 
 
 class H2GCN(nn.Module):
-    def __init__(self, feat_dim: int, hidden_dim: int, class_dim: int, k: int = 2, dropout: float = 0.5):
+    def __init__(
+            self,
+            feat_dim: int,
+            hidden_dim: int,
+            class_dim: int,
+            k: int = 2,
+            dropout: float = 0.5,
+            use_relu: bool = True
+    ):
         super(H2GCN, self).__init__()
         self.dropout = dropout
         self.k = k
+        self.use_relu = use_relu
         self.w_embed = nn.Parameter(
             torch.zeros(size=(feat_dim, hidden_dim)),
             requires_grad=True
@@ -86,7 +95,10 @@ class H2GCN(nn.Module):
         if not self.initialized:
             self._prepare_prop(adj)
         # H2GCN propagation
-        rs = [F.relu(torch.mm(x, self.w_embed))]
+        if self.use_relu:
+            rs = [F.relu(torch.mm(x, self.w_embed))]
+        else:
+            rs = [torch.mm(x, self.w_embed)]
         for i in range(self.k):
             r_last = rs[-1]
             r1 = torch.spmm(self.a1, r_last)
