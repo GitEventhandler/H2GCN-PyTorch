@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 import utils
-from utils import accuracy, set_seed, load_data
+from utils import accuracy, set_seed, select_mask, load_dataset
 from model import H2GCN
 
 # Training settings
@@ -20,7 +20,7 @@ parser.add_argument('--dropout', type=float, default=0.5, help='dropout rate')
 parser.add_argument('--patience', type=int, default=50, help='patience for early stop')
 parser.add_argument('--dataset', default='cora', help='dateset name')
 parser.add_argument('--gpu', type=int, default=0, help='gpu id to use while training, set -1 to use cpu')
-parser.add_argument('--split', type=str, default="DEFAULT", help='data split to use')
+parser.add_argument('--split-id', type=int, default=0, help='the data split to use')
 args = parser.parse_args()
 
 
@@ -58,7 +58,6 @@ def main():
     begin_time = time.time()
     tolerate = 0
     best_loss = 1000
-    acc = 0
     for epoch in range(args.epochs):
         loss_train, acc_train = train()
         loss_validate, acc_validate = validate()
@@ -74,7 +73,6 @@ def main():
             )
         if loss_validate < best_loss:
             best_loss = loss_validate
-            acc = acc_validate
             torch.save(model.state_dict(), checkpoint_path)
             tolerate = 0
         else:
@@ -88,17 +86,14 @@ def main():
 if __name__ == '__main__':
     set_seed(args.seed)
     device = torch.device('cpu' if args.gpu == -1 else "cuda:%s" % args.gpu)
-    split_path = utils.root + '/splits/' + args.dataset + '_split_0.6_0.2_0.npz' if args.split == 'DEFAULT' else args.split
-    # load dataset
-    adj, features, labels, idx_train, idx_val, idx_test, feat_dim, class_dim = load_data(
+    features, labels, feat_dim, class_dim, adj, train_mask, val_mask, test_mask = load_dataset(
         args.dataset,
-        split_path
+        device
     )
-    adj = adj.to(device)
-    features = features.to(device)
-    checkpoint_path = utils.root + '/ckpt/%s.pt' % args.dataset
-    if not os.path.exists(utils.root + '/ckpt'):
-        os.makedirs(utils.root + '/ckpt')
+    checkpoint_path = utils.root + '/checkpoint/%s.pt' % args.dataset
+    idx_train, idx_val, idx_test = select_mask(args.split_id, train_mask, val_mask, test_mask)
+    if not os.path.exists(utils.root + '/checkpoint'):
+        os.makedirs(utils.root + '/checkpoint')
     model = H2GCN(
         feat_dim=feat_dim,
         hidden_dim=args.hidden,
