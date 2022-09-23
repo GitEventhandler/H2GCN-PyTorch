@@ -20,24 +20,25 @@ torch-geometric
 ### Run train.py
 
 ```
-usage: train.py [-h] [--seed SEED] [--epochs EPOCHS] [--lr LR] [--k K]
-                [--wd WD] [--hidden HIDDEN] [--dropout DROPOUT]
-                [--patience PATIENCE] [--dataset DATASET] [--gpu GPU]
-                [--split SPLIT]
-
-optional arguments:
-  -h, --help           show this help message and exit
-  --seed SEED          seed
-  --epochs EPOCHS      number of epochs to train
-  --lr LR              learning rate
-  --k K                number of embedding rounds
-  --wd WD              weight decay value
-  --hidden HIDDEN      embedding output dim
+usage: train.py [-h] [--seed SEED] [--without-relu] [--epochs EPOCHS] [--lr LR] [--k K] 
+                [--wd WD] [--hidden HIDDEN] [--dropout DROPOUT] 
+                [--patience PATIENCE] [--dataset DATASET] [--gpu GPU] 
+                [--split-id SPLIT_ID]
+                                                                                                                                                                                                                   
+optional arguments:                                                                                                                                                                                                
+  -h, --help           show this help message and exit                                                                                                                                                             
+  --seed SEED          seed                                                                                                                                                                                        
+  --without-relu       disable relu for all H2GCN layer                                                                                                                                                                                           
+  --epochs EPOCHS      number of epochs to train                                                                                                                                                                   
+  --lr LR              learning rate                                                                                                                                                                               
+  --k K                number of embedding rounds                                                                                                                                                                  
+  --wd WD              weight decay value                                                                                                                                                                          
+  --hidden HIDDEN      embedding output dim                                                                                                                                                                        
   --dropout DROPOUT    dropout rate
   --patience PATIENCE  patience for early stop
   --dataset DATASET    dateset name
   --gpu GPU            gpu id to use while training, set -1 to use cpu
-  --split SPLIT        data split to use
+  --split-id SPLIT_ID  the data split to use
 ```
 
 ### Custom dataset

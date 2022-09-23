@@ -11,7 +11,7 @@ from model import H2GCN
 # Training settings
 parser = argparse.ArgumentParser()
 parser.add_argument('--seed', type=int, default=0, help='seed')
-parser.add_argument('--without-relu', action="store_true")
+parser.add_argument('--without-relu', action="store_true", help="disable relu for all H2GCN layer")
 parser.add_argument('--epochs', type=int, default=500, help='number of epochs to train')
 parser.add_argument('--lr', type=float, default=0.01, help='learning rate')
 parser.add_argument('--k', type=int, default=2, help='number of embedding rounds')
