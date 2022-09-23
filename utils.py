@@ -1,13 +1,8 @@
 import os
-import pickle as pkl
 import random
-import sys
-import networkx as nx
 import numpy as np
-import scipy.sparse as sp
 import torch
-import torch_sparse
-from torch_geometric.datasets import Planetoid, WikipediaNetwork, WebKB
+from torch_geometric.datasets import Planetoid, WikipediaNetwork, WebKB, Actor
 
 root = os.path.split(__file__)[0]
 
@@ -36,6 +31,8 @@ def load_dataset(name: str, device=None):
         dataset = WikipediaNetwork(root=root + "/dataset/WikipediaNetwork", name=name)
     elif name in ["cornell", "texas", "wisconsin"]:
         dataset = WebKB(root=root + "/dataset/WebKB", name=name)
+    elif name in ["actor"]:
+        dataset = Actor(root=root + "/dataset/Actor")
     else:
         raise "Please implement support for this dataset in function load_dataset()."
     data = dataset[0].to(device)

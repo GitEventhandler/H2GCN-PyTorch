@@ -18,6 +18,7 @@ class H2GCN(nn.Module):
         super(H2GCN, self).__init__()
         self.dropout = dropout
         self.k = k
+        self.act = F.relu if use_relu else lambda x: x
         self.use_relu = use_relu
         self.w_embed = nn.Parameter(
             torch.zeros(size=(feat_dim, hidden_dim)),
@@ -95,15 +96,12 @@ class H2GCN(nn.Module):
         if not self.initialized:
             self._prepare_prop(adj)
         # H2GCN propagation
-        if self.use_relu:
-            rs = [F.relu(torch.mm(x, self.w_embed))]
-        else:
-            rs = [torch.mm(x, self.w_embed)]
+        rs = [self.act(torch.mm(x, self.w_embed))]
         for i in range(self.k):
             r_last = rs[-1]
             r1 = torch.spmm(self.a1, r_last)
             r2 = torch.spmm(self.a2, r_last)
-            rs.append(torch.cat([r1, r2], dim=1))
+            rs.append(self.act(torch.cat([r1, r2], dim=1)))
         r_final = torch.cat(rs, dim=1)
         r_final = F.dropout(r_final, self.dropout, training=self.training)
         return torch.softmax(torch.mm(r_final, self.w_classify), dim=1)
